@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sakina weds Ali Asger - Wedding Invitation</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Great+Vibes&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS for rapid structural styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        /* Custom Properties */
+        :root {
+            --navy: #0a192f;
+            --gold: #d4af37;
+            --gold-light: #f3e5ab;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(212, 175, 55, 0.3);
+        }
+
+        /* Global & Reset */
+        body {
+            background-color: var(--navy);
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4, h5, .serif-font {
+            font-family: 'Playfair Display', serif;
+            font-weight: 400;
+        }
+        
+        .script-font {
+            font-family: 'Great Vibes', cursive;
+        }
+
+        .gold-text {
+            color: var(--gold);
+        }
+        
+        .gold-glow {
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+        }
+
+        /* Particle Canvas Background */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none; /* Let clicks pass through */
+        }
+
+        /* Glassmorphism Elements */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1.5rem;
+            transition: all 0.4s ease;
+        }
+
+        .glass-panel:hover {
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.15);
+            transform: translateY(-5px);
+            border-color: rgba(212, 175, 55, 0.6);
+        }
+
+        /* Form Inputs */
+        .glass-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: white;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            width: 100%;
+            transition: all 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .glass-input:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        /* Custom Button */
+        .gold-btn {
+            background: var(--gold);
+            color: var(--navy);
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            letter-spacing: 2px;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-transform: uppercase;
+        }
+
+        .gold-btn:hover {
+            background: var(--gold-light);
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.6);
+            transform: scale(1.02);
+        }
+
+        /* Scroll Reveal Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 1s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--navy);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gold-light);
+        }
+
+        /* Countdown Circles */
+        .countdown-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100px;
+            height: 100px;
+            border: 2px solid var(--glass-border);
+            border-radius: 50%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(4px);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.05);
+            transition: border-color 0.3s;
+        }
+        
+        .countdown-item:hover {
+            border-color: var(--gold);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+        }
+
+        .countdown-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--gold);
+            line-height: 1;
+        }
+
+        .countdown-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 5px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Custom Notification Toast */
+        #toast {
+            position: fixed;
+            bottom: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--gold);
+            color: var(--navy);
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: 0 5px 25px rgba(212, 175, 55, 0.4);
+            transition: bottom 0.5s cubic-bezier(0.68, -0.55, 0.26, 1.55);
+            z-index: 1000;
+        }
+        #toast.show {
+            bottom: 40px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Particle Background -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- Hero Section -->
+    <header class="relative min-h-screen flex flex-col items-center justify-center text-center px-4">
+        <div class="reveal opacity-0" style="transition-delay: 0.2s;">
+            <p class="uppercase tracking-[0.3em] text-sm md:text-base text-gray-400 mb-6">You are invited to the wedding of</p>
+            <h1 class="script-font text-6xl md:text-8xl lg:text-9xl gold-text gold-glow mb-2">Sakina</h1>
+            <p class="serif-font text-3xl md:text-5xl text-white my-2">&amp;</p>
+            <h1 class="script-font text-6xl md:text-8xl lg:text-9xl gold-text gold-glow mb-8">Ali Asgar</h1>
+            <p class="uppercase tracking-[0.2em] text-lg md:text-xl font-light mt-8">A Celebration of Love</p>
+        </div>
+        
+        <!-- Scroll indicator -->
+        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center animate-bounce opacity-70">
+            <span class="text-xs uppercase tracking-widest mb-2 font-light">Scroll to discover</span>
+            <svg class="w-5 h-5 text-[#d4af37]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+            </svg>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+
+        <!-- The Invitation Section -->
+        <section class="mb-32 reveal">
+            <div class="glass-panel p-10 md:p-16 text-center max-w-3xl mx-auto">
+                <h2 class="text-3xl md:text-4xl gold-text mb-8 tracking-widest">The Invitation</h2>
+                <div class="w-24 h-px bg-[#d4af37] mx-auto mb-8 opacity-50"></div>
+                <p class="text-lg md:text-xl font-light leading-relaxed text-gray-200 mb-6">
+                    Together with their families, we joyfully invite you to share in our happiness as we exchange our vows and begin our new life together.
+                </p>
+                <p class="text-md md:text-lg font-light leading-relaxed text-gray-300 italic">
+                    "Two souls with but a single thought, two hearts that beat as one."
+                </p>
+            </div>
+        </section>
+
+        <!-- Live Countdown Section -->
+        <section class="mb-32 reveal">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl gold-text mb-4 tracking-widest">The Big Day</h2>
+                <p class="font-light tracking-widest text-gray-300">MARCH 29, 2027</p>
+            </div>
+            
+            <div class="flex flex-wrap justify-center gap-6 md:gap-10" id="countdown">
+                <div class="countdown-item">
+                    <span class="countdown-number" id="days">00</span>
+                    <span class="countdown-label">Days</span>
+                </div>
+                <div class="countdown-item">
+                    <span class="countdown-number" id="hours">00</span>
+                    <span class="countdown-label">Hours</span>
+                </div>
+                <div class="countdown-item">
+                    <span class="countdown-number" id="minutes">00</span>
+                    <span class="countdown-label">Minutes</span>
+                </div>
+                <div class="countdown-item">
+                    <span class="countdown-number" id="seconds">00</span>
+                    <span class="countdown-label">Seconds</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Event Details Section -->
+        <section class="mb-32">
+            <div class="text-center mb-16 reveal">
+                <h2 class="text-3xl md:text-4xl gold-text mb-4 tracking-widest">Itinerary</h2>
+                <div class="w-24 h-px bg-[#d4af37] mx-auto opacity-50"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Event 1 -->
+                <div class="glass-panel p-8 reveal flex flex-col h-full">
+                    <h3 class="text-2xl gold-text mb-2">Mehfil e Mehendi</h3>
+                    <p class="text-sm font-light text-gray-400 mb-6 tracking-widest uppercase">Sunday • 9:00 AM</p>
+                    <p class="font-light text-gray-200 mb-6 flex-grow">An evening of colors, music, and intricate henna.</p>
+                    <div class="mt-auto border-t border-[rgba(212,175,55,0.2)] pt-4">
+                        <p class="text-sm">Indraprasath Garden</p>
+                        <p class="text-sm font-light text-gray-400">Attire: Traditional / Colorful</p>
+                    </div>
+                </div>
+
+                <!-- Event 2 -->
+                <div class="glass-panel p-8 reveal flex flex-col h-full" style="transition-delay: 0.1s;">
+                    <h3 class="text-2xl gold-text mb-2">Katha & Mamera</h3>
+                    <p class="text-sm font-light text-gray-400 mb-6 tracking-widest uppercase">Sunday • 5:00 PM</p>
+                    <p class="font-light text-gray-200 mb-6 flex-grow">Seeking blessings and celebrating traditions together.</p>
+                    <div class="mt-auto border-t border-[rgba(212,175,55,0.2)] pt-4">
+                        <p class="text-sm">Indraprasath Garden</p>
+                        <p class="text-sm font-light text-gray-400">Attire: Traditional</p>
+                    </div>
+                </div>
+
+                <!-- Event 3 -->
+                <div class="glass-panel p-8 reveal flex flex-col h-full">
+                    <h3 class="text-2xl gold-text mb-2">A Regal Celebration</h3>
+                    <p class="text-sm font-light text-gray-400 mb-6 tracking-widest uppercase">Monday • 11:00 AM</p>
+                    <p class="font-light text-gray-200 mb-6 flex-grow">A grand celebration of love, togetherness, and joy.</p>
+                    <div class="mt-auto border-t border-[rgba(212,175,55,0.2)] pt-4">
+                        <p class="text-sm">Indraprasath Garden
+                        </p>
+                        <p class="text-sm font-light text-gray-400">Attire: Formal / Black Tie</p>
+                    </div>
+                </div>
+
+                <!-- Event 4 -->
+                <div class="glass-panel p-8 reveal flex flex-col h-full" style="transition-delay: 0.1s;">
+                    <h3 class="text-2xl gold-text mb-2">Sharbat</h3>
+                    <p class="text-sm font-light text-gray-400 mb-6 tracking-widest uppercase">Monday• 8:00 PM</p>
+                    <p class="font-light text-gray-200 mb-6 flex-grow">Sweet beginnings and refreshing moments to conclude the festivities.</p>
+                    <div class="mt-auto border-t border-[rgba(212,175,55,0.2)] pt-4">
+                        <p class="text-sm">Hakimi Mawaid</p>
+                        <p class="text-sm font-light text-gray-400">Attire: Komi Libas</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Regards Section -->
+        <section class="mb-20 reveal">
+            <div class="glass-panel p-10 md:p-16 text-center max-w-2xl mx-auto">
+                <p class="script-font text-4xl md:text-5xl gold-text mb-6 gold-glow">With Warm Regards</p>
+                <h2 class="text-3xl md:text-5xl mb-6 tracking-wider text-white">The Mullawala Family</h2>
+                <div class="w-24 h-px bg-[#d4af37] mx-auto mb-6 opacity-50"></div>
+                
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center pb-10 pt-4 opacity-70 font-light text-sm">
+        <p class="serif-font gold-text text-xl mb-2">S & A</p>
+        <p>&copy; 2027 Sakina & Ali Asgar. All rights reserved.</p>
+    </footer>
+
+   <!-- Scripts -->
+    <script>
+        // --- 1. Elegant Wedding Particle Engine ---
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        
+        let width, height;
+        let particles = [];
+        const numParticles = 900; // Slightly increased for denser, richer shapes
+        
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', () => {
+            resize();
+            updatePhase(currentPhase); 
+        });
+        resize();
+
+        // The Particle Class
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.targetX = this.x;
+                this.targetY = this.y;
+                this.size = Math.random() * 1.5 + 0.5;
+                this.vx = 0;
+                this.vy = 0;
+                this.angle = Math.random() * Math.PI * 2;
+                this.speed = Math.random() * 0.02 + 0.01;
+            }
+
+            update() {
+                // Spring physics to glide beautifully to targets
+                const dx = this.targetX - this.x;
+                const dy = this.targetY - this.y;
+                
+                this.vx += dx * 0.012; // Slightly faster snap into shape
+                this.vy += dy * 0.012;
+                
+                // Friction for smooth deceleration
+                this.vx *= 0.88;
+                this.vy *= 0.88;
+                
+                // Organic wandering motion (breathing effect)
+                this.angle += this.speed;
+                this.x += this.vx + Math.cos(this.angle) * 0.4;
+                this.y += this.vy + Math.sin(this.angle) * 0.4;
+            }
+
+            draw() {
+                ctx.fillStyle = 'rgba(212, 175, 55, 0.85)'; // Rich Metallic gold
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < numParticles; i++) {
+            particles.push(new Particle());
+        }
+
+        // Extract coordinates from text/symbols
+        function getPixelsForText(text, fontStr) {
+            const offCanvas = document.createElement('canvas');
+            const offCtx = offCanvas.getContext('2d', { willReadFrequently: true });
+            offCanvas.width = width;
+            offCanvas.height = height;
+            
+            offCtx.fillStyle = 'white';
+            offCtx.textAlign = 'center';
+            offCtx.textBaseline = 'middle';
+            offCtx.font = fontStr;
+            offCtx.fillText(text, width / 2, height / 2);
+            
+            const imgData = offCtx.getImageData(0, 0, width, height).data;
+            const targetPoints = [];
+            const step = Math.max(Math.floor(width / 200), 2); 
+            
+            for (let y = 0; y < height; y += step) {
+                for (let x = 0; x < width; x += step) {
+                    const index = (y * width + x) * 4;
+                    const alpha = imgData[index + 3];
+                    if (alpha > 128) {
+                        targetPoints.push({ x, y });
+                    }
+                }
+            }
+            return targetPoints;
+        }
+
+        let currentPhase = 0;
+        
+        function updatePhase(phase) {
+            currentPhase = phase;
+            let targetPoints = [];
+            const shortSide = Math.min(width, height);
+            
+            // Using the elegant Playfair Display font for all shapes to ensure smooth, beautiful curves
+            const symbolFont = `${shortSide * 0.4}px "Playfair Display", serif`; 
+            const initialsFont = `bold ${shortSide * 0.25}px "Playfair Display", serif`;
+            
+            switch (phase) {
+                case 0: // Scatter (Starry Night)
+                    for (let i = 0; i < numParticles; i++) {
+                        targetPoints.push({ x: Math.random() * width, y: Math.random() * height });
+                    }
+                    break;
+                case 1: // Infinity Symbol (Forever)
+                    targetPoints = getPixelsForText("∞", symbolFont);
+                    break;
+                case 2: // Love Heart
+                    targetPoints = getPixelsForText("♥", symbolFont);
+                    break;
+                case 3: // Initials
+                    targetPoints = getPixelsForText("S & A", initialsFont);
+                    break;
+            }
+
+            if (targetPoints.length === 0) {
+                for (let i = 0; i < numParticles; i++) {
+                    targetPoints.push({ x: Math.random() * width, y: Math.random() * height });
+                }
+            }
+
+            targetPoints.sort(() => Math.random() - 0.5);
+
+            for (let i = 0; i < particles.length; i++) {
+                const t = targetPoints[i % targetPoints.length];
+                // Tiny random offset to make it look like a constellation of stars
+                particles[i].targetX = t.x + (Math.random() - 0.5) * 5;
+                particles[i].targetY = t.y + (Math.random() - 0.5) * 5;
+            }
+        }
+
+        function animate() {
+            // Dark navy tail effect for the particles
+            ctx.fillStyle = 'rgba(10, 25, 47, 0.25)'; 
+            ctx.fillRect(0, 0, width, height);
+            
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+            }
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        function nextPhase() {
+            currentPhase = (currentPhase + 1) % 4; // Cycles through 4 phases now
+            updatePhase(currentPhase);
+        }
+        
+        updatePhase(0); 
+        setInterval(nextPhase, 6000); 
+
+        // --- 2. Live Countdown Logic (March 29, 2027) ---
+        function initCountdown() {
+            const targetTime = new Date("March 29, 2027 00:00:00").getTime();
+
+            const daysEl = document.getElementById("days");
+            const hoursEl = document.getElementById("hours");
+            const minsEl = document.getElementById("minutes");
+            const secsEl = document.getElementById("seconds");
+
+            const updateCountdown = setInterval(function() {
+                const now = new Date().getTime();
+                const distance = targetTime - now;
+
+                if (distance < 0) {
+                    clearInterval(updateCountdown);
+                    document.getElementById("countdown").innerHTML = "<h3 class='text-2xl gold-text'>The Day Has Arrived!</h3>";
+                    return;
+                }
+
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                daysEl.innerText = days.toString().padStart(2, '0');
+                hoursEl.innerText = hours.toString().padStart(2, '0');
+                minsEl.innerText = minutes.toString().padStart(2, '0');
+                secsEl.innerText = seconds.toString().padStart(2, '0');
+            }, 1000);
+        }
+
+        // --- 3. Scroll Reveal Animations ---
+        function initScrollReveal() {
+            const reveals = document.querySelectorAll('.reveal');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, {
+                threshold: 0.1, 
+                rootMargin: "0px 0px -50px 0px"
+            });
+
+            reveals.forEach(reveal => {
+                observer.observe(reveal);
+            });
+            
+            setTimeout(() => {
+                const heroReveal = document.querySelector('header .reveal');
+                if(heroReveal) heroReveal.classList.add('active');
+            }, 100);
+        }
+
+        window.onload = function() {
+            initCountdown();
+            initScrollReveal();
+        };
+    </script>
+</body>
+</html>
